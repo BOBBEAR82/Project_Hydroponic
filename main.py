@@ -3,6 +3,7 @@ import RPi.GPIO as gpio
 import signal
 import Adafruit_DHT
 from picamera import PiCamera
+from tkinter import *
 
 DHT_sensor = Adafruit_DHT.DHT11
 gpio_id_DHT = 18
@@ -58,23 +59,42 @@ DHT_report_complete_time_start = 0
 
 frame = 0
 camera = PiCamera()
-image_folder = '/home/pi/Pictures/time_lapse_test'
+image_folder = '/home/pi_with_screen/Pictures/time_lapse_test'
 #camera.capture(image_folder + '/time_lapse_test_%05d.jpg' % (frame))
 #print('frame number: %04d' % (frame))
 #frame += 1
 time_camera_last_capture = time.time()
 camera_capture_init = 1
 
+cycle_time_max_ms = 0
+cycle_time_min_ms = 10000
+cycle_time_max_ms_init_counter = 5
+
+
+root = Tk()
+root.title("Hydroponic System Data")
+root.geometry("600x400")
+
+humidity_display = Label(root, text= "Humidity: ", font=("sans-serif", 30), fg= "red")
+humidity_display.grid(row = 0, column = 0)
+temperature_display= Label(root, text= "Temperature: ", font=("sans-serif", 30), fg= "blue")
+temperature_display.grid(row = 1, column = 0)
+growing_light_display = Label(root, text= "Growing light status: ", font=("sans-serif", 30), fg= "green")
+growing_light_display.grid(row = 2, column = 0)
+air_pump_display = Label(root, text= "Air pump status: ", font=("sans-serif", 30), fg= "black")
+air_pump_display.grid(row = 3, column = 0)
+
+
 
 while 1:
     time_actual = time.time()
+    time_cycle_start_ms = time_actual * 1000
     time_object = time.localtime()
     actual_time_hour = time_object.tm_hour
     actual_time_min = time_object.tm_min
     actual_time_sec = time_object.tm_sec
     time_display = str(actual_time_hour) + ':' + str(actual_time_min) + ':' + str(actual_time_sec)
-    
-    
+
     
     if (gpio.input(gpio_id_air_pump) == 0 and time_actual - time_start_on >= 60*30):
         time_start_off = time.time()
@@ -90,6 +110,8 @@ while 1:
               .format(time_display, ('ON' if gpio.input(gpio_id_air_pump) == 0 else 'OFF')))
         time_start_off = 0
 
+    air_pump_display.config(text= "Air pump status: \t" + ('ON' if gpio.input(gpio_id_air_pump) == 0 else 'OFF'))
+    
 
         
     if (gpio.input(gpio_id_growing_light) == 0 and (actual_time_hour < 7 or actual_time_hour >= 23)):
@@ -104,8 +126,12 @@ while 1:
               .format(time_display, ('ON' if gpio.input(gpio_id_growing_light) == 0 else 'OFF')))
         
 
+    growing_light_display.config(text= "Growing light status: \t" + ('ON' if gpio.input(gpio_id_growing_light) == 0 else 'OFF'))
+    
+
         
-    if DHT_report_enable == 0 and (actual_time_min == 0 or actual_time_min == 30) and time_actual - DHT_report_complete_time_start > 60:
+    #if DHT_report_enable == 0 and (actual_time_min == 0 or actual_time_min == 30) and time_actual - DHT_report_complete_time_start > 60:
+    if DHT_report_enable == 0 and time_actual - DHT_report_complete_time_start > 5:
         DHT_report_enable = 1
         #print('Debug: enable triggered, time: ', actual_time_sec, time_actual, DHT_report_retry_time_start)
         
@@ -131,14 +157,18 @@ while 1:
             DHT_report_retry_counter = 0
             DHT_report_complete_time_start = time_actual
             
+            humidity_display.config(text= "Humidity: \t" + str(humidity) + " %")
+            temperature_display.config(text= "Temperature: \t" + str(temperature) + " degC")
+            
             
     if DHT_report_enable == 0 and DHT_report_enable_old == 1 and DHT_report_retry != 0:
-        print('DHT too many failures!')
+        print('DHT too many failures! Retry counter: {}'.format(DHT_report_retry_counter))
         DHT_report_retry_counter = 0
         DHT_report_retry = 0
     
     DHT_report_enable_old = DHT_report_enable
-    
+
+
     
     if time_actual - time_camera_last_capture >= 60 * 10 or camera_capture_init == 1: 
         camera.capture(image_folder + '/time_lapse_test_%05d.jpg' % (frame))
@@ -146,3 +176,24 @@ while 1:
         frame += 1
         time_camera_last_capture = time_actual
         camera_capture_init = 0
+    
+    root.update()
+    
+
+    
+    this_cycle_time_ms = time.time() *1000 - time_cycle_start_ms
+    if cycle_time_max_ms_init_counter > 1:
+        cycle_time_max_ms_init_counter -= 1
+    elif cycle_time_max_ms_init_counter == 1:
+        cycle_time_max_ms_init_counter -= 1
+        cycle_time_max_ms = this_cycle_time_ms
+        cycle_time_min_ms = this_cycle_time_ms
+    else:
+        if this_cycle_time_ms > cycle_time_max_ms:
+            cycle_time_max_ms = this_cycle_time_ms
+        if this_cycle_time_ms < cycle_time_min_ms:
+            cycle_time_min_ms = this_cycle_time_ms  
+    print('cycle duration: {0} ms; \t max cycle time: {1} ms; \t min cycle time: {2} ms'.format(this_cycle_time_ms, cycle_time_max_ms, cycle_time_min_ms))
+            
+    
+    

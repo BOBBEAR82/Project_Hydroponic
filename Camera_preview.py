@@ -82,8 +82,8 @@ video_folder = "/home/pi/Pictures/time_lapse_test"
 video_name = 'mygeneratedvideo_sunset_1.avi'
 
 
-#camera_test()
-capture_image(interval, duration_minute, image_folder)
+camera_test()
+#capture_image(interval, duration_minute, image_folder)
 #create_video(video_fps, image_folder, video_folder, video_name)
 
 #os.system('sudo reboot now')
