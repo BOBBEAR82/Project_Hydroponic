@@ -19,12 +19,14 @@ class DHT:
         self.report_retry_counter = 0
         self.report_retry_time_start = 0
         self.report_complete_time_start = 0
+        self.is_updated = 0
         
     def init(self, gpio_id = 18):
         self.gpio_id = gpio_id
         self.DHT_sensor = Adafruit_DHT.DHT11
         
     def running(self, time_actual, minute_actual, time_display):
+        self.is_updated = 0
         #if self.report_enable == 0 and (minute_actual == 0 or minute_actual == 30) and time_actual - self.report_complete_time_start > 60:
         if self.report_enable == 0 and time_actual - self.report_complete_time_start > 10:
             self.report_enable = 1
@@ -50,7 +52,8 @@ class DHT:
                 print(('DHT measure time: ' + '{0},' + '\t' + 'Humidity: ' + '{1} %,' + '\t' + 'Temperature: ' + '{2} degC,' + '\t' * 2 + 'Retry counter: ' + '{3}')
                       .format(time_display, self.humidity, self.temperature, self.report_retry_counter))
                 self.report_retry_counter = 0
-                self.report_complete_time_start = time_actual            
+                self.report_complete_time_start = time_actual
+                self.is_updated = 1
                 
         if self.report_enable == 0 and self.report_enable_old == 1 and self.report_retry != 0:
             print('DHT too many failures! Retry counter: {}'.format(self.report_retry_counter))

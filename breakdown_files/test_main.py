@@ -85,7 +85,13 @@ while 1:
        
         
     #GUI display
-    root.running(air_pump.get_gpio_state(), growing_light.get_gpio_state(), dht.humidity, dht.temperature)
+    root.running(air_pump.get_gpio_state(),
+                 growing_light.get_gpio_state(),
+                 dht.humidity,
+                 dht.temperature,
+                 dht.is_updated,
+                 cycle_time_cal.cycle_inteval_max_ms,
+                 cycle_time_cal.cycle_inteval_min_ms)
 
     
     cycle_time_cal.running()    
