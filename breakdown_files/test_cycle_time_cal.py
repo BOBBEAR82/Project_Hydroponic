@@ -36,6 +36,7 @@ class ActualTime:
         self.actual_time_hour = 0
         self.actual_time_min = 0
         self.actual_time_sec = 0
+        self.actual_date = ''
         self.time_display = ''
         
     def get_actual_time(self):
@@ -43,6 +44,9 @@ class ActualTime:
         self.actual_time_ms = self.actual_time_s * 1000
         
         time_object = time.localtime()
+        
+        self.actual_date = str(time_object.tm_year) + '/' + str(time_object.tm_mon) + '/' + str(time_object.tm_mday)
+        
         self.actual_time_hour = time_object.tm_hour
         self.actual_time_min = time_object.tm_min
         self.actual_time_sec = time_object.tm_sec

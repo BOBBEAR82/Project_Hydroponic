@@ -21,6 +21,7 @@ class GUI(Tk):
         self.temperature_index = Label(self, text= "Temperature: ", font=("sans-serif", 10), fg= "blue", bg= "white")
         self.growing_light_index = Label(self, text= "Growing Light Status: ", font=("sans-serif", 10), fg= "green", bg= "white")
         self.air_pump_index = Label(self, text= "Air Pump Status: ", font=("sans-serif", 10), fg= "black", bg= "white")
+        self.tent_fan_index = Label(self, text= "Tent fan Status: ", font=("sans-serif", 10), fg= "red", bg= "white")
         self.cycle_time_max_index = Label(self, text= "Cycle Time Max: ", font=("sans-serif", 10), fg= "blue", bg= "white")
         self.cycle_time_min_index = Label(self, text= "Cycle Time Min: ", font=("sans-serif", 10), fg= "blue", bg= "white")
         
@@ -28,6 +29,7 @@ class GUI(Tk):
         self.temperature_display = Label(self, text= "", font=("sans-serif", 10), fg= "blue", bg= "white")
         self.growing_light_display = Label(self, text= "", font=("sans-serif", 10), fg= "green", bg= "white")
         self.air_pump_display = Label(self, text= "", font=("sans-serif", 10), fg= "black", bg= "white")
+        self.tent_fan_display = Label(self, text= "", font=("sans-serif", 10), fg= "red", bg= "white")
         self.cycle_time_max_display = Label(self, text= "", font=("sans-serif", 10), fg= "blue", bg= "white")
         self.cycle_time_min_display = Label(self, text= "", font=("sans-serif", 10), fg= "blue", bg= "white")
         
@@ -42,7 +44,7 @@ class GUI(Tk):
         self.ax_humidity = figure.add_subplot(111)
         self.ax_temperature = self.ax_humidity.twinx()
         self.reset_plot(0, 0)
-        self.canvas.get_tk_widget().grid(row = 7, column = 0, columnspan = 2)
+        self.canvas.get_tk_widget().grid(row = 8, column = 0, columnspan = 2)
 
         
     def init(self):
@@ -50,15 +52,17 @@ class GUI(Tk):
         self.temperature_index.grid(row = 1, column = 0, sticky = 'w')
         self.growing_light_index.grid(row = 2, column = 0, sticky = 'w')
         self.air_pump_index.grid(row = 3, column = 0, sticky = 'w')
-        self.cycle_time_max_index.grid(row = 4, column = 0, sticky = 'w')
-        self.cycle_time_min_index.grid(row = 5, column = 0, sticky = 'w')
+        self.tent_fan_index.grid(row = 4, column = 0, sticky = 'w')
+        self.cycle_time_max_index.grid(row = 5, column = 0, sticky = 'w')
+        self.cycle_time_min_index.grid(row = 6, column = 0, sticky = 'w')
         
         self.humidity_display.grid(row = 0, column = 1, sticky = 'w')
         self.temperature_display.grid(row = 1, column = 1, sticky = 'w')
         self.growing_light_display.grid(row = 2, column = 1, sticky = 'w')
         self.air_pump_display.grid(row = 3, column = 1, sticky = 'w')
-        self.cycle_time_max_display.grid(row = 4, column = 1, sticky = 'w')
-        self.cycle_time_min_display.grid(row = 5, column = 1, sticky = 'w')
+        self.tent_fan_display.grid(row = 4, column = 1, sticky = 'w')
+        self.cycle_time_max_display.grid(row = 5, column = 1, sticky = 'w')
+        self.cycle_time_min_display.grid(row = 6, column = 1, sticky = 'w')
         
     def reset_plot(self, first_data, data_len):
         #self.axes.set_ylim([-10, 10])
@@ -75,9 +79,9 @@ class GUI(Tk):
         self.ax_humidity.set_ylim([10, 80])
         self.ax_temperature.set_ylim([15, 35])
               
-    def running(self, air_pump_gpio_state, growing_light_gpio_state, humidity, temperature, is_DHT_updated, cycle_time_max, cycle_time_min):
+    def running(self, air_pump_gpio_state, tent_fan_gpio_state, growing_light_gpio_state, humidity, temperature, is_DHT_updated, cycle_time_max, cycle_time_min):
         self.air_pump_display.config(text= 'ON' if air_pump_gpio_state == 0 else 'OFF')
-        
+        self.tent_fan_display.config(text= 'ON' if tent_fan_gpio_state == 0 else 'OFF')
         self.growing_light_display.config(text = 'ON' if growing_light_gpio_state == 0 else 'OFF')
         
         self.cycle_time_max_display.config(text= str(cycle_time_max) + " ms")
