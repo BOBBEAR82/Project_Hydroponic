@@ -67,7 +67,7 @@ dht.init(gpio_id_DHT)
 
 camera = Camera()
 image_folder = '/home/pi_with_screen/Pictures/time_lapse_test'
-
+camera.set_start_frame(image_folder + '/')
 
 cycle_time_cal = CycleTimeCalculator()
 
