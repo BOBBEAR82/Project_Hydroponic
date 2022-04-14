@@ -14,7 +14,8 @@ class CycleTimeCalculator:
     
     def running(self):
         self.this_cycle_interval_ms = time.time() * 1000 - self.this_cycle_start_time_ms
-        if self.cycle_interval_init_counter > 1:
+        
+        if self.cycle_interval_init_counter > 1:   ### this if and elif is for skipping the first several cycles, because found that the the first several cycles the interval is usually longer
             self.cycle_interval_init_counter -= 1
         elif self.cycle_interval_init_counter == 1:
             self.cycle_interval_init_counter -= 1

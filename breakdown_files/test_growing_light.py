@@ -2,16 +2,14 @@ import RPi.GPIO as gpio
 
 
 class GrowingLight:
-    def __init__(self):
-        self.gpio_id = 0
+    def __init__(self, gpio_id = 27):
+        self.gpio_id = gpio_id
         self.last_on_time = 0
         self.last_off_time = 0
         self.turn_on_hour = 7
         self.turn_off_hour = 23
         self.gpio_state = 1
         
-    def init(self, gpio_id = 27):
-        self.gpio_id = gpio_id
         gpio.setup(self.gpio_id, gpio.OUT, initial = gpio.HIGH)
         
     def first_start(self, time_actual = 0):
